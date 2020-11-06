@@ -2,6 +2,9 @@ from threading import Thread
 from time import sleep
 from random import randint
 
+LOW_END_WAIT_TIME = 0.5
+HIGH_END_WAIT_TIME = 1
+
 
 class Semaforo:
     def __init__(self, initial_value):
@@ -20,7 +23,8 @@ class Semaforo:
         return self.value
 
     def __wait__(self):
-        print("Alguma lógica que faz o processo entrar em estado de espera")
+        global LOW_END_WAIT_TIME
+        sleep(LOW_END_WAIT_TIME)
 
 
 class Mutex(Semaforo):
@@ -32,7 +36,8 @@ class Mutex(Semaforo):
 
     def down(self):
         if self.value == 0:
-            raise Exception("Recurso já está ocupado")
+            self.__wait__()
+            self.down
         else:
             self.value = 0
 
@@ -50,7 +55,7 @@ class BarbeiroThread(Thread):
 
     def corta_cabelo(self):
         print("snip")
-        sleep(randint(5, 10))
+        sleep(randint(LOW_END_WAIT_TIME, HIGH_END_WAIT_TIME)/10)
         print("próximo!")
 
     def run(self):
@@ -60,13 +65,13 @@ class BarbeiroThread(Thread):
         global mutex
 
         while(True):
-            clientes_semaforo.down
-            mutex.down
+            clientes_semaforo.down()
 
+            mutex.down()
             espera -= 1
 
-            barbeiro_mutex.up
-            mutex.up
+            barbeiro_mutex.up()
+            mutex.up()
 
             self.corta_cabelo()
 
@@ -76,6 +81,9 @@ class ClienteThread(Thread):
         Thread.__init__(self)
 
     def run(self):
+        global LOW_END_WAIT_TIME
+        global HIGH_END_WAIT_TIME
+
         global espera
         global clientes_semaforo
         global barbeiro_mutex
@@ -83,16 +91,18 @@ class ClienteThread(Thread):
         global cadeiras
 
         while(True):
-            sleep(randint(5, 10))
+            sleep(randint(LOW_END_WAIT_TIME, HIGH_END_WAIT_TIME)/10)
+            mutex.down()
             if espera < cadeiras:
                 print("opa, to na fila")
                 espera += 1
-                clientes_semaforo.up
-                mutex.up
 
-                barbeiro_mutex.down
+                clientes_semaforo.up()
+                mutex.up()
+
+                barbeiro_mutex.down()
             else:
-                mutex.up
+                mutex.up()
                 print("fui!")
 
 
