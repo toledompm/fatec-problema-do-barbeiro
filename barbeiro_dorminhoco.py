@@ -1,39 +1,47 @@
 from threading import Thread
 from time import sleep
 
+
 class Semaforo:
     def __init__(self, initial_value):
         self.value = initial_value
 
     def up(self):
         self.value += 1
-    
+
     def down(self):
-        if self.value == 0: self.__wait__()
-        else: self.value -= 1
-    
+        if self.value == 0:
+            self.__wait__()
+        else:
+            self.value -= 1
+
     def get_value(self):
         return self.value
 
     def __wait__(self):
         print("Alguma lógica que faz o processo entrar em estado de espera")
 
+
 class Mutex(Semaforo):
     def up(self):
-        if self.value == 1: raise Exception("Recurso já esta livre")
-        else: 
+        if self.value == 1:
+            raise Exception("Recurso já esta livre")
+        else:
             self.value = 1
-    
+
     def down(self):
-        if self.value == 0: raise Exception("Recurso já está ocupado")
+        if self.value == 0:
+            raise Exception("Recurso já está ocupado")
         else:
             self.value = 0
+
 
 cadeiras = 5
 espera = 0
 clientes_semaforo = Semaforo(0)
 barbeiro_mutex = Mutex(0)
 mutex = Mutex(1)
+
 
 class BarbeiroThread(Thread):
     def __init__(self):
@@ -61,9 +69,11 @@ class BarbeiroThread(Thread):
 
             self.corta_cabelo()
 
+
 class ClienteThread(Thread):
     def __init__(self):
         Thread.__init__(self)
+
     def run(self):
         global espera
         global clientes_semaforo
@@ -80,9 +90,10 @@ class ClienteThread(Thread):
                 mutex.up
 
                 barbeiro_mutex.down
-            else: 
+            else:
                 mutex.up
                 print("fui!")
+
 
 def main():
     cliente_thread = ClienteThread()
@@ -93,5 +104,6 @@ def main():
 
     cliente_thread.join()
     barbeiro_thread.join()
+
 
 main()
