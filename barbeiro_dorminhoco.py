@@ -1,5 +1,6 @@
 from threading import Thread
 from time import sleep
+from random import randint
 
 
 class Semaforo:
@@ -49,8 +50,8 @@ class BarbeiroThread(Thread):
 
     def corta_cabelo(self):
         print("snip")
-        sleep(1)
-        print("snip")
+        sleep(randint(5, 10))
+        print("próximo!")
 
     def run(self):
         global espera
@@ -82,7 +83,7 @@ class ClienteThread(Thread):
         global cadeiras
 
         while(True):
-            sleep(0.5)
+            sleep(randint(5, 10))
             if espera < cadeiras:
                 print("opa, to na fila")
                 espera += 1
