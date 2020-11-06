@@ -2,8 +2,8 @@ from threading import Thread
 from time import sleep
 from random import randint
 
-LOW_END_WAIT_TIME = 0.5
-HIGH_END_WAIT_TIME = 1
+LOW_END_WAIT_TIME = 5
+HIGH_END_WAIT_TIME = 10
 
 
 class Semaforo:
@@ -18,7 +18,7 @@ class Semaforo:
             self.__wait__()
             self.down
         else:
-            self.value = 0
+            self.value -= 1
 
     def get_value(self):
         return self.value
@@ -30,10 +30,7 @@ class Semaforo:
 
 class Mutex(Semaforo):
     def up(self):
-        if self.value == 1:
-            raise Exception("Recurso já esta livre")
-        else:
-            self.value = 1
+        self.value = 1
 
 
 cadeiras = 5
@@ -49,7 +46,6 @@ class BarbeiroThread(Thread):
 
     def corta_cabelo(self):
         print("snip")
-        sleep(randint(LOW_END_WAIT_TIME, HIGH_END_WAIT_TIME)/10)
         print("próximo!")
 
     def run(self):
