@@ -16,8 +16,9 @@ class Semaforo:
     def down(self):
         if self.value == 0:
             self.__wait__()
+            self.down
         else:
-            self.value -= 1
+            self.value = 0
 
     def get_value(self):
         return self.value
@@ -33,13 +34,6 @@ class Mutex(Semaforo):
             raise Exception("Recurso já esta livre")
         else:
             self.value = 1
-
-    def down(self):
-        if self.value == 0:
-            self.__wait__()
-            self.down
-        else:
-            self.value = 0
 
 
 cadeiras = 5
